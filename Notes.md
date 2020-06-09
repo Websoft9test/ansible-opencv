@@ -1,154 +1,205 @@
-# OpenCV Notes
+#  OpenCV Notes
 
-组件名称：OpenCV-Server  
-安装文档：https://www.opencv.com/download.html  
-配置文档：https://www.opencv.com/admin-guide.html  
-支持平台： Debian家族 | RHEL家族 | Windows | Kubernetes |Docker  
+组件名称：OpenCV 
+安装文档：https://docs.opencv.org/master/d7/d9f/tutorial_linux_install.html  
+配置文档: https://docs.opencv.org/master/d9/d52/tutorial_java_dev_intro.html 
+支持平台： Debian家族 | RHEL家族 | Windows |macOS   
 
-责任人：helin
+责任人：zxc
 
 ## 概要
 
-OpenCV是一款开源的MQ系统，它包含OpenCV-Server和OpenCV-Client，服务器上运行的是OpenCV-Server
+OpenCV是一个用于图像处理、分析、机器视觉方面的开源函数库。目前，OpenCV已广泛应用于人脸识别、手势识别、人机交互、物体识别、运动跟踪等各类视觉处理领域。
 
 ## 环境要求
 
-* 程序语言：Java 
-* 应用服务器：自带
+* 程序语言：  C++
+* 应用服务器：无
 * 数据库：无
-* 依赖组件：Erlang
+* 依赖组件：opencv_contrib
 * 其他：
 
 ## 安装说明
 
-官方建议使用其自身提供的erlang和opencv-server的仓库，不建议使用操作系统自带的仓库或其他第三方仓库。同时，官方提供了自动安装仓库的自动化脚本。
+本项目采用构建源码包编译安装。
 
 下面基于不同的安装平台，分别进行安装说明。
 
-### CentOS
+### CentOS  
 
 ```shell
-# 分别安装erlang源和opencv-server源
-curl -s https://packagecloud.io/install/repositories/opencv/erlang/script.rpm.sh | sudo bash
-curl -s https://packagecloud.io/install/repositories/opencv/opencv-server/script.rpm.sh | sudo bash
+# 安装所需依赖项
+sudo yum install epel-release git gcc gcc-c++ cmake3 qt5-qtbase-devel \
+    python python-devel python-pip cmake python-devel python34-numpy \
+    gtk2-devel libpng-devel jasper-devel openexr-devel libwebp-devel \
+    libjpeg-turbo-devel libtiff-devel libdc1394-devel tbb-devel numpy \
+    eigen3-devel gstreamer-plugins-base-devel freeglut-devel mesa-libGL \
+    mesa-libGL-devel boost boost-thread boost-devel libv4l-devel gtk+-devel \ 
+    gimp-devel gimp-devel-tools gimp-help-browser zlib-devel libtiff-devel  \ 
+    libjpeg-devel libpng-devel gstreamer-devel libavc1394-devel libraw1394-devel  \        libdc1394-devel jasper-devel jasper-utils swig python libtool nasm  \
+    build-essential ant -y
 
-# 安装
-yum install erlang opencv-server -y
+    
+
+
+# 克隆OpenCV和opencv_contrib存储库
+mkdir ~/opencv_build && cd ~/opencv_build
+git clone https://github.com/opencv/opencv.git
+git clone https://github.com/opencv/opencv_contrib.git
+
+# 创建临时生成目录并切换到该目录
+cd ~/opencv_build/opencv && mkdir build && cd build
+
+## 使用cmake命令配置OpenCV生成
+cmake3 -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D INSTALL_C_EXAMPLES=ON \
+    -D INSTALL_PYTHON_EXAMPLES=ON \
+    -D OPENCV_GENERATE_PKGCONFIG=ON \
+    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_build/opencv_contrib/modules \
+    -D BUILD_EXAMPLES=ON ..
+
+#编译安装
+sudo make -j8 && make install
+
+#测试创建jar包
+cd  /root/opencv_build/opencv/samples/java/ant
+vim srcSimpleSample.java
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.CvType;
+import org.opencv.core.Scalar;
+class SimpleSample {
+  static{ System.loadLibrary(Core.NATIVE_LIBRARY_NAME); }
+  public static void main(String[] args) {
+    System.out.println("Welcome to OpenCV " + Core.VERSION);
+    Mat m = new Mat(5, 10, CvType.CV_8UC1, new Scalar(0));
+    System.out.println("OpenCV Mat: " + m);
+    Mat mr1 = m.row(1);
+    mr1.setTo(new Scalar(1));
+    Mat mc5 = m.col(5);
+    mc5.setTo(new Scalar(5));
+    System.out.println("OpenCV Mat data:\n" + m.dump());
+  }
+}
+
+ant -DocvJarDir =/root/opencv_build/opencv/build/bin   
+此时,下方会多一个jar包
+/root/opencv_build/opencv/samples/java/ant/bulid/jarsrcSimpleSample.java
+
+
+
+
 ```
 
-### Ubuntu
+### Ubuntu 
 
 ```shell
-# 分别安装erlang源和opencv-server源
-curl -s https://packagecloud.io/install/repositories/opencv/erlang/script.deb.sh | sudo bash
-curl -s https://packagecloud.io/install/repositories/opencv/opencv-server/script.deb.sh | sudo bash
+# 安装所需依赖项
+sudo apt install build-essential cmake git pkg-config libgtk-3-dev \
+    libavcodec-dev libavformat-dev libswscale-dev libv4l-dev \
+    libxvidcore-dev libx264-dev libjpeg-dev libpng-dev libtiff-dev \
+    gfortran openexr libatlas-base-dev python3-dev python3-numpy \
+    libtbb2 libtbb-dev libdc1394-22-dev   -y
 
-# 安装
-sudo apt-get update -y
-apt install erlang opencv-server -y
+# 克隆OpenCV和opencv_contrib存储库
+mkdir ~/opencv_build && cd ~/opencv_build
+git clone https://github.com/opencv/opencv.git
+git clone https://github.com/opencv/opencv_contrib.git
+
+# 创建临时生成目录并切换到该目录
+cd ~/opencv_build/opencv
+mkdir build && cd build
+
+# 使用cmake命令配置OpenCV生成
+cmake -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D INSTALL_C_EXAMPLES=ON \
+    -D INSTALL_PYTHON_EXAMPLES=ON \
+    -D OPENCV_GENERATE_PKGCONFIG=ON \
+    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_build/opencv_contrib/modules \
+    -D BUILD_EXAMPLES=ON ..
+
+#编译安装(j8为可选项,比如现在是告诉编译器建立8个线程)
+make -j8 && make intall
+
+
 ```
 
 ## 路径
 
-* 程序路径：/usr/lib/opencv/lib/opencv_server-*
-* 日志路径：/var/log/opencv  
-* 配置文件路径：  
+* 程序路径：/root/opencv_build/opencv
+* 日志路径：  
+* 配置文件路径：
 * 其他...
 
-## 配置
+##配置
 
-安装完成后，需要依次完成如下配置
-
-```shell
-# Set OpenCV
-- name: Restart OpenCV
-  shell: systemctl start opencv-server
-
-- name: Enable the management console of OpenCV
-  shell: opencv-plugins enable opencv_management
-
-- name: Create administrator for OpenCV console
-  shell: |
-    opencvctl add_user admin admin
-    opencvctl set_user_tags admin administrator
-```
+无
 
 ## 账号密码
 
+
 ### 数据库密码
 
-如果有数据库
+如果有数据库  
+无
 
-* 数据库安装方式：包管理工具自带 or 自行安装
+* 数据库安装方式：
 * 账号密码：
 
 ### 后台账号
 
 如果有后台账号
+无
 
-* 登录地址
-* 账号密码
+* 登录地址 
+* 账号密码   
 * 密码修改方案：最好是有命令行修改密码的方案
-
 
 ## 服务
 
-本项目安装后自动生成：opencv-server 服务
+本项目安装后自动生成：无服务
 
-备注：如果开机没有服务，程序无法运行的情况下，需要自行编写服务后存放到项目中
+备注：本项目安装后自动生成服务
 
-服务的模板如下：
+服务文件位置：
 
 ```
-[Unit]
-Description=Redmine
-After=nginx.service
-[Service]
-Environment=RAILS_ENV=production
-Type=simple
-WorkingDirectory=/data/wwwroot/redmine
-ExecStart=/usr/local/bin/puma -b tcp://127.0.0.1:9292 -e production 
-User=redmine
-[Install]
-WantedBy=multi-user.target
+
 ```
 
 ## 环境变量
 
-列出需要增加的环境变量以及增加环境变量的命令：
-
-* 名称 | 路径
+无
 
 ## 版本号
 
 通过如下的命令获取主要组件的版本号: 
 
 ```
-# Check OpenCV version
-sudo opencvctl status | grep OpenCV*
-
-# Check Erlang version
-ls /usr/lib64/erlang
+# Check  OpenCV version
+  pkg-config --modversion opencv4         
+ 
+#  Check  opencv_contrib version
+   python -c "import cv2; print(cv2.__version__)"     #centos
+   python3 -c "import cv2; print(cv2.__version__)" 
 ```
 
 ## 常见问题
 
 #### 有没有管理控制台？
 
-*http:// 公网 IP:15672* 即可访问控制台，系统默认存在一个无法通过外网访问的guest/guest账号
+无
 
 #### 本项目需要开启哪些端口？
 
-| item      | port  |
-| --------- | ----- |
-| lustering | 25672 |
-| AMQP      | 5672  |
-| http      | 15672 |
+无
 
 #### 有没有CLI工具？
 
-有，通过 `opencvctl` 查看工具的说明
+无
 
 ## 日志
 
-* 2020-04-14 完成CentOS安装研究
+* 2020-05-12完成CentOS安装研究
