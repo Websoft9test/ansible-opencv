@@ -1,17 +1,17 @@
 # 服务启停
 
-使用由Websoft9提供的 RabbitMQ 部署方案，可能需要用到的服务如下：
+使用由Websoft9提供的 OpenCV 部署方案，可能需要用到的服务如下：
 
-### RabbitMQ
+### OpenCV
 
 ```shell
-sudo systemctl start rabbitmq-server
-sudo systemctl stop rabbitmq-server
-sudo systemctl restart rabbitmq-server
-sudo systemctl status rabbitmq-server
+sudo systemctl start opencv-server
+sudo systemctl stop opencv-server
+sudo systemctl restart opencv-server
+sudo systemctl status opencv-server
 
-# you can use this debug mode if RabbitMQ service can't run
-rabbitmq-server console
+# you can use this debug mode if OpenCV service can't run
+opencv-server console
 ```
 
 ### MySQL
