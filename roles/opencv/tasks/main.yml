@@ -22,11 +22,11 @@
 - block:
   - name: Check OpenCV Version
     shell: 
-      echo `pip freeze |grep opencv-python` >> /data/logs/install_version.txt"
+      echo `pip freeze |grep opencv-python` >> /data/logs/install_version.txt
 
   - name: Check opencv-contrib-python Version
     shell: 
-      echo `pip freeze |grep opencv-contrib-python` >> /data/logs/install_version.txt'
+      echo `pip freeze |grep opencv-contrib-python` >> /data/logs/install_version.txt
    
 
 
