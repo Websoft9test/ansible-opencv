@@ -5,58 +5,10 @@
 # configure OpenCV
 
 
-- name: Create opencv directory
-  file:
-    path: /data/wwwroot/opencv
-    state: directory
-    owner: opencv
-    group: opencv
-    
-
-
-- name: Set opencv config
-  template:
-    src: opencv.conf.jinja2
-    dest: /data/wwwroot/opencv/opencv.conf
-    owner: opencv
-    group: opencv
-
-- name: Setting opencv service
-  copy:
-    src: opencv.service
-    dest: /lib/systemd/system/opencv.service
-
-- name: Restart opencv
-  service:
-    name: opencv.service
-    state: restarted
-    enabled: yes
-
-- name: Create opencv System User
-  user:
-      name: opencv 
-      create_home: no 
-      home: /opt/opencv
-      shell: /usr/sbin/nologin
-
-- name: Download opencv
-  unarchive:
-      src: "{{opencv_download_url}}"
-      dest: /opt/ 
-      group: opencv 
-      remote_src: yes
-      owner: opencv
-      mode: g+w
-
-- name: Create the storage directory for files.
-  file:
-      path: /opt/opencv/data
-      state: directory 
-      owner: opencv 
-      group: opencv
-      mode: g+w
-      
-
+- name: Install opencv-python
+    shell: | 
+      pip install opencv-python
+      pip install opencv-contrib-python
 
 # set soft link, -f enforce the exist links
 # ln -sf src des
