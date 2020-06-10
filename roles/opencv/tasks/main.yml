@@ -4,12 +4,6 @@
 
 # configure OpenCV
 
-- name: Create opencv User
-  user:
-    name: opencv
-    shell: /usr/sbin/nologin
-    home: /data/wwwroot/opencv
-    create_home: no
 
 - name: Create opencv directory
   file:
@@ -18,12 +12,7 @@
     owner: opencv
     group: opencv
     
-- name: Download opencv
-  get_url:
-    dest: /data/wwwroot/opencv
-    url: "{{opencv_download_url}}"
-    owner: opencv
-    group: opencv
+
 
 - name: Set opencv config
   template:
@@ -67,12 +56,7 @@
       group: opencv
       mode: g+w
       
-- name: Set database connection /opt/opencv/config/config.json
-  lineinfile:
-    dest: /opt/opencv/config/config.json
-    regexp: '"DataSource":'
-    line: '    "DataSource": "{{opencv_db_user}}:{{opencv_db_password}}@tcp(localhost:3306)/{{opencv_db_name}}?charset=utf8mb4,utf8&readTimeout=30s&writeTimeout=30s",'
-    backrefs: yes 
+
 
 # set soft link, -f enforce the exist links
 # ln -sf src des
@@ -85,14 +69,12 @@
 # must use sudo sh -c to solve the no-root permission
 - block:
   - name: Check OpenCV Version
-    shell: sudo sh -c "opencvctl status | grep 'OpenCV version' 1>> /data/logs/install_version.txt"
+    shell: 
+      echo `pip freeze |grep opencv-python` >> /data/logs/install_version.txt"
 
-  - name: Check Erlang Version
-    shell: sudo sh -c 'echo "Erlang $(yum info erlang | grep Version | sed -n 1p)" 1>> /data/logs/install_version.txt'
-    when: ansible_os_family=="RedHat"
+  - name: Check opencv-contrib-python Version
+    shell: 
+      echo `pip freeze |grep opencv-contrib-python` >> /data/logs/install_version.txt'
+   
 
-# check service state
-- name: Check OpenCV Service
-  shell: systemctl status opencv | grep Active*
-  register: check_opencv_service
-  notify: check_opencv_service
+
