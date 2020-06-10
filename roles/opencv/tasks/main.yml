@@ -5,10 +5,10 @@
 # configure OpenCV
 
 
-- name: Install opencv-python
-    shell: | 
-      pip install opencv-python
-      pip install opencv-contrib-python
+- name: Install opencv-python  pencv-contrib-python
+  shell: | 
+    pip install opencv-python
+    pip install opencv-contrib-python
 
 # set soft link, -f enforce the exist links
 # ln -sf src des
