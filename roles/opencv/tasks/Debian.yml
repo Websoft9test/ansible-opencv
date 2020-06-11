@@ -13,19 +13,18 @@
 
   - name: Clone opencv and opencv_contrib
     shell: |
-       mkdir ~/opencv_build && cd ~/opencv_build
+       mkdir ~/opencv_build 
        git clone https://github.com/opencv/opencv.git
        git clone https://github.com/opencv/opencv_contrib.git
-  
-  - name : Change directory
-    shell:
-      cd ~/opencv_build/opencv
-      mkdir build && cd build
+    args:
+      chdir:  ~/opencv_build/
+ 
 
 #   Build install
 
   - name: Build opencv makefile
-    shell: 
+    shell: |
+      mkdir ~/opencv_build/opencv/build
       cmake -D CMAKE_BUILD_TYPE=RELEASE \
       -D CMAKE_INSTALL_PREFIX=/usr/local \
       -D INSTALL_C_EXAMPLES=ON \
@@ -33,6 +32,9 @@
       -D OPENCV_GENERATE_PKGCONFIG=ON \
       -D OPENCV_EXTRA_MODULES_PATH=~/opencv_build/opencv_contrib/modules \
       -D BUILD_EXAMPLES=ON ..
+     args:
+       chdir:  ~/opencv_build/opencv/build/
+          
 
   - name:  Install opencv
     shell: 
