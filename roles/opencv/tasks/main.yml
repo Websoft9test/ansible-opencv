@@ -31,7 +31,7 @@
 # must use sudo sh -c to solve the no-root permission
 - block:
   - name: Check OpenCV Version
-    shell: 
+    shell: sh -c ""
       
 
   
