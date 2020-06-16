@@ -2,8 +2,18 @@
 - name: Install this role on {{ansible_os_family}}
   include: "{{ansible_os_family}}.yml"
 
-# configure OpenCV
+# download  OpenCV
 
+- name: Download opencv package
+  get_url:
+    url: https://nchc.dl.sourceforge.net/project/opencvlibrary/4.2.0/opencv-4.2.0-vc14_vc15.exe
+    dest: /data/
+
+- name: rename & unzip opencv
+  shell: 
+  args:
+    cmd:  mv opencv-4.2.0-vc14_vc15.exe opencv-4.2.0.zip  && unzip opencv-4.2.0.zip
+    chdir: /data
 
 #- name: Install opencv-python  pencv-contrib-python
 #  shell: | 
@@ -22,7 +32,7 @@
 - block:
   - name: Check OpenCV Version
     shell: 
-      echo `pkg-config --modversion opencv4` >> /data/logs/install_version.txt
+      
 
   
    
