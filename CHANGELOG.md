@@ -4,6 +4,7 @@
 
 1. 可视化管理工具
 2. AmazonLinux支持
+3. GPU支持
 
 ## Logs
 
